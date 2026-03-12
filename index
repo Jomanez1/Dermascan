@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DermaScan \u2014 An\u00e1lisis de Pecas</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,700;0,900;1,700&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy:    #1B2A6B;
+      --navy-dk: #111C4E;
+      --purple:  #6B4FA0;
+      --purple-lt: #8B6FBF;
+      --teal:    #00809D;
+      --bg:      #F4F6FB;
+      --white:   #FFFFFF;
+      --text:    #1A1A2E;
+      --muted:   #5A6280;
+      --border:  #D0D6E8;
+      --safe:    #1A7A4A;
+      --warn:    #B86A00;
+      --danger:  #B52B2B;
+      --safe-bg: #EAF6EF;
+      --warn-bg: #FFF4E0;
+      --danger-bg: #FDEAEA;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Source Sans 3', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* \u2500\u2500 NAV \u2500\u2500 */
+    nav {
+      background: var(--navy-dk);
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      height: 56px;
+      gap: 10px;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .logo-icon {
+      width: 34px; height: 34px;
+      border: 2.5px solid #fff;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .nav-title {
+      font-family: 'Source Serif 4', serif;
+      font-weight: 700;
+      font-size: 20px;
+      color: #fff;
+      letter-spacing: -0.3px;
+    }
+    .nav-badge {
+      margin-left: auto;
+      font-size: 11px;
+      color: rgba(255,255,255,0.55);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* \u2500\u2500 HERO \u2500\u2500 */
+    .hero {
+      background: linear-gradient(135deg, var(--navy-dk) 0%, var(--navy) 55%, var(--purple) 100%);
+      padding: 40px 24px 44px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      right: -40px; top: -40px;
+      width: 220px; height: 220px;
+      border: 40px solid rgba(255,255,255,0.06);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .hero-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 10px;
+    }
+    .hero h1 {
+      font-family: 'Source Serif 4', serif;
+      font-size: 36px;
+      font-weight: 900;
+      color: #fff;
+      line-height: 1.1;
+      margin-bottom: 12px;
+    }
+    .hero p {
+      font-size: 15px;
+      color: rgba(255,255,255,0.75);
+      line-height: 1.6;
+      max-width: 420px;
+    }
+
+    /* \u2500\u2500 DISCLAIMER \u2500\u2500 */
+    .disclaimer {
+      background: #FFF8E1;
+      border-left: 4px solid #F0A500;
+      padding: 14px 16px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .disclaimer p {
+      font-size: 13px;
+      color: #5A4000;
+      line-height: 1.5;
+    }
+
+    /* \u2500\u2500 MAIN \u2500\u2500 */
+    main { padding: 24px 20px 48px; max-width: 560px; margin: 0 auto; }
+
+    /* \u2500\u2500 SECTION TITLE \u2500\u2500 */
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--purple);
+      margin-bottom: 10px;
+    }
+
+    /* \u2500\u2500 CARD \u2500\u2500 */
+    .card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+    .card-body { padding: 20px; }
+
+    /* \u2500\u2500 UPLOAD \u2500\u2500 */
+    .upload-zone {
+      border: 2px dashed var(--border);
+      border-radius: 8px;
+      padding: 36px 20px;
+      text-align: center;
+      cursor: pointer;
+      background: #FAFBFF;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .upload-zone:hover, .upload-zone.drag-over {
+      border-color: var(--purple);
+      background: #F5F2FB;
+    }
+    .upload-icon {
+      width: 52px; height: 52px;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--purple) 100%);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 14px;
+    }
+    .upload-zone p { font-size: 14px; font-weight: 600; color: var(--text); }
+    .upload-zone small { font-size: 12px; color: var(--muted); margin-top: 4px; display: block; }
+
+    .preview-img {
+      width: 100%;
+      max-height: 260px;
+      object-fit: cover;
+      border-radius: 6px;
+      display: none;
+    }
+
+    /* \u2500\u2500 BUTTON \u2500\u2500 */
+    .btn-primary {
+      width: 100%;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--purple) 100%);
+      color: #fff;
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      letter-spacing: 0.02em;
+    }
+    .btn-primary:hover:not(:disabled) { opacity: 0.92; transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+    .btn-secondary {
+      width: 100%;
+      background: transparent;
+      color: var(--navy);
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 12px 20px;
+      border: 2px solid var(--navy);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      margin-top: 12px;
+    }
+    .btn-secondary:hover { background: var(--navy); color: #fff; }
+
+    /* \u2500\u2500 LOADING \u2500\u2500 */
+    .loading-wrap {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      padding: 36px 0;
+      text-align: center;
+    }
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid var(--border);
+      border-top-color: var(--purple);
+      border-radius: 50%;
+      animation: spin 0.85s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-wrap p { font-size: 14px; color: var(--muted); }
+
+    /* \u2500\u2500 RISK SCORE \u2500\u2500 */
+    .risk-header {
+      background: linear-gradient(135deg, var(--navy-dk), var(--navy));
+      padding: 20px;
+      color: #fff;
+    }
+    .risk-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+      margin-bottom: 6px;
+    }
+    .risk-title {
+      font-family: 'Source Serif 4', serif;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.25;
+      margin-bottom: 14px;
+    }
+    .risk-bar-track {
+      background: rgba(255,255,255,0.2);
+      height: 7px;
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+    .risk-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: #fff;
+      transition: width 1.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    .risk-bar-pct {
+      font-size: 12px;
+      color: rgba(255,255,255,0.6);
+      text-align: right;
+    }
+
+    /* \u2500\u2500 BADGE \u2500\u2500 */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      padding: 4px 11px;
+      border-radius: 4px;
+    }
+    .badge-safe   { background: var(--safe-bg);   color: var(--safe); }
+    .badge-warn   { background: var(--warn-bg);   color: var(--warn); }
+    .badge-danger { background: var(--danger-bg); color: var(--danger); }
+
+    /* \u2500\u2500 ABCDE \u2500\u2500 */
+    .criterion {
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    .criterion:last-child { border-bottom: none; }
+    .criterion.visible { opacity: 1; transform: none; }
+
+    .crit-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .crit-letter {
+      width: 28px; height: 28px;
+      background: linear-gradient(135deg, var(--navy), var(--purple));
+      color: #fff;
+      font-weight: 700;
+      font-size: 13px;
+      border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .crit-label { font-weight: 700; font-size: 14px; margin-left: 10px; }
+    .crit-score { font-size: 12px; font-weight: 600; color: var(--muted); }
+
+    .crit-bar-track {
+      background: var(--bg);
+      height: 5px;
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+    .crit-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width 1s cubic-bezier(0.4,0,0.2,1);
+    }
+    .crit-finding { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+    /* \u2500\u2500 RECOMMENDATION \u2500\u2500 */
+    .rec-box {
+      background: linear-gradient(135deg, #F0F4FF, #F5F0FF);
+      border-left: 4px solid var(--purple);
+      padding: 16px;
+      border-radius: 0 6px 6px 0;
+    }
+    .rec-box strong { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--purple); display: block; margin-bottom: 6px; }
+    .rec-box p { font-size: 14px; color: var(--text); line-height: 1.6; }
+
+    /* \u2500\u2500 ERROR \u2500\u2500 */
+    .error-box {
+      background: var(--danger-bg);
+      border: 1px solid #F5BEBE;
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-size: 13px;
+      color: var(--danger);
+      display: none;
+      margin-top: 12px;
+    }
+
+    /* \u2500\u2500 FADE IN \u2500\u2500 */
+    .fade-in { animation: fadeUp 0.5s ease forwards; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    /* \u2500\u2500 FOOTER \u2500\u2500 */
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 12px;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" href="#">
+      <div class="logo-icon">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <circle cx="9" cy="9" r="5" stroke="white" stroke-width="1.5"/>
+          <line x1="9" y1="2" x2="9" y2="16" stroke="white" stroke-width="1.5"/>
+          <line x1="2" y1="9" x2="16" y2="9" stroke="white" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <span class="nav-title">DermaScan</span>
+    </a>
+    <span class="nav-badge">Herramienta educativa</span>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <p class="hero-label">An\u00e1lisis Dermatol\u00f3gico \u00b7 IA</p>
+    <h1>An\u00e1lisis de<br/>pecas y lunares</h1>
+    <p>Evaluaci\u00f3n autom\u00e1tica basada en los criterios ABCDE utilizados en dermatolog\u00eda cl\u00ednica.</p>
+  </div>
+
+  <!-- DISCLAIMER -->
+  <div class="disclaimer">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="flex-shrink:0;margin-top:1px">
+      <path d="M9 2L16 15H2L9 2Z" stroke="#F0A500" stroke-width="1.5" stroke-linejoin="round"/>
+      <line x1="9" y1="7.5" x2="9" y2="11" stroke="#F0A500" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="9" cy="13" r="0.8" fill="#F0A500"/>
+    </svg>
+    <p><strong>Aviso importante:</strong> Esta herramienta es exclusivamente educativa e informativa. No sustituye el diagn\u00f3stico de un dermat\u00f3logo certificado. Ante cualquier duda, consulta a un profesional m\u00e9dico.</p>
+  </div>
+
+  <!-- MAIN -->
+  <main>
+
+    <!-- Upload card -->
+    <p class="section-title">1. Selecciona una imagen</p>
+    <div class="card">
+      <div class="card-body">
+        <div id="uploadZone" class="upload-zone"
+             onclick="document.getElementById('fileInput').click()"
+             ondragover="handleDragOver(event)"
+             ondragleave="handleDragLeave(event)"
+             ondrop="handleDrop(event)">
+          <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleFile(event)" />
+          <div id="uploadPrompt">
+            <div class="upload-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M12 16V8M8 12l4-4 4 4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <rect x="3" y="3" width="18" height="18" rx="5" stroke="white" stroke-width="1.5"/>
+              </svg>
+            </div>
+            <p>Arrastra una imagen o haz clic para seleccionar</p>
+            <small>JPG, PNG, WEBP \u2014 Foto clara, bien iluminada, sin filtros</small>
+          </div>
+          <img id="previewImg" class="preview-img" alt="Vista previa" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Analyze -->
+    <p class="section-title">2. Ejecutar an\u00e1lisis</p>
+    <button id="analyzeBtn" class="btn-primary" onclick="analyzeImage()" disabled>
+      Analizar imagen con IA
+    </button>
+
+    <!-- Loading -->
+    <div id="loadingState" class="loading-wrap">
+      <div class="spinner"></div>
+      <p>Procesando imagen con inteligencia artificial\u2026</p>
+    </div>
+
+    <!-- Error -->
+    <div id="errorBox" class="error-box"></div>
+
+    <!-- RESULTS -->
+    <div id="resultsSection" style="display:none;margin-top:28px" class="fade-in">
+
+      <p class="section-title">3. Resultados del an\u00e1lisis</p>
+
+      <!-- Risk card -->
+      <div class="card">
+        <div class="risk-header">
+          <p class="risk-label">Nivel de riesgo evaluado</p>
+          <p id="riskTitle" class="risk-title"></p>
+          <div class="risk-bar-track">
+            <div id="riskBar" class="risk-bar-fill" style="width:0%"></div>
+          </div>
+          <p id="riskPct" class="risk-bar-pct"></p>
+        </div>
+        <div class="card-body" style="padding-top:14px;padding-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+          <span id="riskBadge" class="badge"></span>
+          <p id="riskDesc" style="font-size:13px;color:var(--muted);line-height:1.5;text-align:right;max-width:260px"></p>
+        </div>
+      </div>
+
+      <!-- ABCDE card -->
+      <div class="card">
+        <div class="card-body" style="padding-bottom:4px">
+          <p class="section-title" style="margin-bottom:0">Criterios ABCDE</p>
+        </div>
+        <div style="padding:0 20px 8px">
+          <div id="criteriaList"></div>
+        </div>
+      </div>
+
+      <!-- Recommendation -->
+      <div id="recommendationBox" class="card">
+        <div class="card-body"></div>
+      </div>
+
+      <!-- Reset -->
+      <button class="btn-secondary" onclick="resetApp()">
+        \u2190 Analizar otra imagen
+      </button>
+
+    </div>
+
+  </main>
+
+  <footer>
+    DermaScan \u00b7 Herramienta educativa \u00b7 No reemplaza la consulta m\u00e9dica profesional
+  </footer>
+
+  <script>
+    let selectedFile = null;
+
+    function handleDragOver(e) {
+      e.preventDefault();
+      document.getElementById('uploadZone').classList.add('drag-over');
+    }
+    function handleDragLeave() {
+      document.getElementById('uploadZone').classList.remove('drag-over');
+    }
+    function handleDrop(e) {
+      e.preventDefault();
+      document.getElementById('uploadZone').classList.remove('drag-over');
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) loadPreview(file);
+    }
+    function handleFile(e) {
+      const file = e.target.files[0];
+      if (file) loadPreview(file);
+    }
+    function loadPreview(file) {
+      selectedFile = file;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        const img = document.getElementById('previewImg');
+        img.src = ev.target.result;
+        img.style.display = 'block';
+        document.getElementById('uploadPrompt').style.display = 'none';
+        document.getElementById('analyzeBtn').disabled = false;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    async function analyzeImage() {
+      if (!selectedFile) return;
+      hideError();
+      document.getElementById('resultsSection').style.display = 'none';
+      document.getElementById('analyzeBtn').style.display = 'none';
+
+      const loading = document.getElementById('loadingState');
+      loading.style.display = 'flex';
+
+      try {
+        const base64 = await fileToBase64(selectedFile);
+        const mediaType = selectedFile.type || 'image/jpeg';
+
+        const response = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-20250514',
+            max_tokens: 1000,
+            system: `Eres un asistente m\u00e9dico educativo especializado en dermatolog\u00eda. Analiza im\u00e1genes de lunares o pecas usando los criterios ABCDE. Responde SIEMPRE en JSON v\u00e1lido puro sin markdown ni backticks con este esquema exacto:
+{
+  "riskLevel": "bajo" | "moderado" | "alto",
+  "riskScore": 0-100,
+  "summary": "frase concisa del resultado",
+  "description": "2-3 frases sobre el an\u00e1l
